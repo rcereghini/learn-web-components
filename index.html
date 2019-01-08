@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>WebComponents</title>
+    <style media="screen">
+        h1{
+            color: red;
+            border-bottom: 5px solid darkblue; 
+            padding-bottom: 5px; 
+            font-size: 64px;
+        }
+        .wrap{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: 'Staatliches', cursive;
+
+        }
+        .componentWrap{
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Staatliches" rel="stylesheet">
+</head>
+<body>
+    <div class="wrap">
+            <h1>Bob's Awesome Web Component</h1>
+        <div style="display:flex">
+            <div id="componentWrap" class="componentWrap" style="flex: 3;">
+                <my-component ></my-component>
+                <!-- <my-component></my-component>
+                <my-component></my-component>
+                <my-component></my-component>  -->
+            </div>
+            <div style="flex: 1; margin-top: 20px; margin-left: 20px;">
+                <Button onclick="catchAnother()" style=" box-shadow: 3px 3px 3px rgba(0,0,0,.35); border-radius: 5px; padding: 5px; font-size: 20px; background-color: firebrick; border: 5px solid darkblue; color: white; font-family: 'Staatliches', cursive;">Catch Another!</Button>
+            </div>
+        </div>
+    </div>
+
+<!-- ALL BELOW TO BE INCLUDED IN SEPERATE FILE     -->
+<!-- TEMPLATE -->
+
+    <template id="my-component">
+        <style media="screen">
+            h1 {
+                color: whitesmoke;
+            }
+            .wrap {
+                border: 5px solid darkblue;
+                border-radius: 5px;
+                background-color: firebrick;
+                width: 400px;
+                margin-top: 20px;
+                font-family: 'Staatliches', cursive;
+                box-shadow: 3px 3px 3px rgba(0,0,0,.35);
+            }
+            .header {
+                text-align: center;
+            }
+        </style>
+        <div class="wrap">
+            <!-- <h1 class="header">This is a web component!</h1> -->
+            <!-- <h1 class="header"><slot name="slot1">First slot is empty.</slot></h1> -->
+            <!-- <h1 class="header"><slot name="slot2">Second slot is empty.</slot></h1> -->
+            <div id="droph1" style="text-align: center"></div>
+        </div>
+    </template>
+
+
+<!-- WEB COMPONENT -->
+
+    <script type="text/javascript">
+        
+        const drop = document.getElementById('droph1')
+
+        let catchAnother = () => {
+            // document.getElementById('componentWrap').innerHTML += `<my-component></my-component>`
+            document.getElementById('pokeContainer').iChooseYou();
+        }
+
+        class MyComponent extends HTMLElement {
+            constructor(){
+                super();
+                this.id = 'pokeContainer';
+                let shadowdom = this.attachShadow({mode: 'open'});
+                let template = document.getElementById('my-component');
+
+    
+                let templateHTML = template.content.cloneNode(true);
+                shadowdom.appendChild(templateHTML)
+                shadowdom.getElementById('droph1').innerHTML += '<h1>I choose you!</h1>';
+
+                // (async function iChooseYou(){
+                // var pokeNumber = Math.floor(Math.random() * 150)
+                // let pokemonInfo = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeNumber}/`)
+                //     .then(response => response.json())
+                // let pokeBall = document.createElement('p')
+                // pokeBall.innerHTML = pokemonInfo["forms"][0].name
+                // shadowdom.getElementById('droph1').innerHTML += `<img style="box-shadow: inset 3px 3px 3px rgba(0,0,0,.35); border-radius: 5px; padding: 20px; border:5px solid darkblue; background-color: white;" src="${pokemonInfo.sprites.front_default}"/><h1>${pokemonInfo["forms"][0].name}</h1>`
+                // })()
+
+            }
+
+            connectedCallback(){
+                console.log('New component added!')
+                this.iChooseYou();
+            }
+
+            iChooseYou(){
+                var instance = this;
+                // console.log(1, instance)
+                (async function iChooseYou(){
+                console.log(2, instance)
+                var pokeNumber = Math.floor(Math.random() * 150)
+                let pokemonInfo = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokeNumber}/`)
+                    .then(response => response.json())
+                let pokeBall = document.createElement('p')
+                pokeBall.innerHTML = pokemonInfo["forms"][0].name
+                instance.shadowRoot.getElementById('droph1').innerHTML += `<img style="box-shadow: inset 3px 3px 3px rgba(0,0,0,.35); border-radius: 5px; padding: 20px; border:5px solid darkblue; background-color: white;" src="${pokemonInfo.sprites.front_default}"/><h1>${pokemonInfo["forms"][0].name}</h1>`
+                })()
+            }
+
+        }
+
+        customElements.define('my-component', MyComponent)
+    </script>
+</body>
+</html>
